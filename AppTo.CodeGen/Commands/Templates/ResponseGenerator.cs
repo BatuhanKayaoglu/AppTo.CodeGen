@@ -4,9 +4,7 @@ public static class ResponseGenerator
 {
     public static string CreateResponse(string namespaceName, string featureName)
     {
-        return $@"
-
-namespace {namespaceName};
+        return $@"namespace {namespaceName};
 
 public class {featureName}Response
 {{

@@ -7,7 +7,7 @@
 
         <!-- Dotnet Tool olarak paketlenebilmesi için gerekli -->
         <PackAsTool>true</PackAsTool> <!-- NuGet paketi CLI tool olarak paketlenir ve global yüklenebilir. -->
-        <ToolCommandName>appTo</ToolCommandName>
+        <ToolCommandName>codegen</ToolCommandName>
 
         <!-- NuGet paket bilgileri -->
         <PackageId>AppTo.CodeGen</PackageId>

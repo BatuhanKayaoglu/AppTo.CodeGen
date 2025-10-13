@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AppTo.CodeGen.Commands.Templates;
 using AppTo.CodeGen.Services;
+using AppTo.CodeGen.Models;
 
 namespace AppTo.CodeGen.Commands
 {
@@ -33,7 +34,7 @@ namespace AppTo.CodeGen.Commands
         /// <param name="featureName">Feature adı, örn: QrSaleTest</param>
         /// <param name="type">command veya query</param>
         /// <param name="endpoint">Endpoint controller adı, örn: Sale</param>
-        public async Task GenerateAsync(string featureName, string type = "command", string endpoint = "")
+        public async Task GenerateAsync(string featureName, FeatureType type = FeatureType.Command, string endpoint = "", string projectName = null)
         {
             if (string.IsNullOrWhiteSpace(featureName))
             {
@@ -41,13 +42,7 @@ namespace AppTo.CodeGen.Commands
                 return;
             }
 
-            type = type.ToLower();
-
-            if (type != "command" && type != "query")
-            {
-                Console.WriteLine("❌ Type 'command' veya 'query' olmalı!");
-                return;
-            }
+            // Type validation is now handled by enum, no need to check
 
             // 1️⃣ Application katmanını bul
             var appLayer = _locator.LocateApplicationLayer();
@@ -60,7 +55,7 @@ namespace AppTo.CodeGen.Commands
             _fileSystem.EnsureDirectory(appFeatureFolder);
 
             // 4️⃣ Application: Altına Commands veya Queries klasörü oluştur
-            var appTypeFolder = Path.Combine(appFeatureFolder, type.Equals("command") ? "Commands" : "Queries");
+            var appTypeFolder = Path.Combine(appFeatureFolder, type == FeatureType.Command ? "Commands" : "Queries");
             _fileSystem.EnsureDirectory(appTypeFolder);
 
             // 5️⃣ Abstraction: Feature klasörünü oluştur (Abstraction altında direkt)
@@ -74,21 +69,30 @@ namespace AppTo.CodeGen.Commands
             _fileSystem.EnsureDirectory(responseFolder);
 
             // 7️⃣ Dosya yolları
-            var commandFile = Path.Combine(appTypeFolder, $"{featureName}Command.cs");
-            var handlerFile = Path.Combine(appTypeFolder, $"{featureName}CommandHandler.cs");
+            var commandFile = Path.Combine(appTypeFolder, type == FeatureType.Command ? $"{featureName}Command.cs" : $"{featureName}Query.cs");
+            var handlerFile = Path.Combine(appTypeFolder, type == FeatureType.Command ? $"{featureName}CommandHandler.cs" : $"{featureName}QueryHandler.cs");
             var requestFile = Path.Combine(requestFolder, $"{featureName}Request.cs");
             var responseFile = Path.Combine(responseFolder, $"{featureName}Response.cs");
 
             // 8️⃣ Namespace'ler
             var appProjectName = new DirectoryInfo(appLayer).Name; // örn: Metropol.YODA.Application
             var absProjectName = new DirectoryInfo(abstractionLayer).Name; // örn: Metropol.YODA.Abstraction
-            var appNamespaceName = $"{appProjectName}.{featureName}.{(type.Equals("command") ? "Commands" : "Queries")}";
+            var appNamespaceName = $"{appProjectName}.{featureName}.{(type == FeatureType.Command ? "Commands" : "Queries")}";
             var requestNamespaceName = $"{absProjectName}.{featureName}.Request";
             var responseNamespaceName = $"{absProjectName}.{featureName}.Response";
 
             // 9️⃣ Kodları oluştur
-            var commandCode = CommandGenerator.CreateCommand(appNamespaceName, featureName, type);
-            var handlerCode = CommandHandlerGenerator.CreateCommandHandler(appNamespaceName, featureName, type);
+            string commandCode, handlerCode;
+            if (type == FeatureType.Command)
+            {
+                commandCode = Commands.Templates.CommandGenerator.CreateCommand(appNamespaceName, featureName, type.ToString().ToLower(), projectName);
+                handlerCode = Commands.Templates.CommandHandlerGenerator.CreateCommandHandler(appNamespaceName, featureName, type.ToString().ToLower(), projectName);
+            }
+            else
+            {
+                commandCode = Commands.Templates.QueryGenerator.CreateQuery(appNamespaceName, featureName, type.ToString().ToLower(), projectName);
+                handlerCode = Commands.Templates.QueryHandlerGenerator.CreateQueryHandler(appNamespaceName, featureName, type.ToString().ToLower(), projectName);
+            }
             var requestCode = RequestGenerator.CreateRequest(requestNamespaceName, featureName);
             var responseCode = ResponseGenerator.CreateResponse(responseNamespaceName, featureName);
 
@@ -98,8 +102,11 @@ namespace AppTo.CodeGen.Commands
             _fileSystem.WriteFile(requestFile, requestCode);
             _fileSystem.WriteFile(responseFile, responseCode);
 
-            Console.WriteLine($"✅ {featureName}Command.cs oluşturuldu: {commandFile}");
-            Console.WriteLine($"✅ {featureName}CommandHandler.cs oluşturuldu: {handlerFile}");
+            var commandType = type == FeatureType.Command ? "Command" : "Query";
+            var handlerType = type == FeatureType.Command ? "CommandHandler" : "QueryHandler";
+
+            Console.WriteLine($"✅ {featureName}{commandType}.cs oluşturuldu: {commandFile}");
+            Console.WriteLine($"✅ {featureName}{handlerType}.cs oluşturuldu: {handlerFile}");
             Console.WriteLine($"✅ {featureName}Request.cs oluşturuldu: {requestFile}");
             Console.WriteLine($"✅ {featureName}Response.cs oluşturuldu: {responseFile}");
 
