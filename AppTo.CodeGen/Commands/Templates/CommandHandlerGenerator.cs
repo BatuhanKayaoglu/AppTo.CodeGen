@@ -13,7 +13,6 @@ public static class CommandHandlerGenerator
         var projectName = string.Join(".", parts.Take(parts.Length - 2)); // Metropol.YODA.Application
         var responseNamespace = $"{projectName.Replace("Application", "Abstraction")}.{featureName}.Response";
 
-        // Kod içeriği
         return $@"using Metropol.YODA.Infrastructure.CQRS.Concrete;
 using {responseNamespace};
 

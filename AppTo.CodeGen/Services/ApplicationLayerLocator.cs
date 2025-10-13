@@ -3,11 +3,11 @@ using System.Linq;
 
 namespace AppTo.CodeGen.Services;
 
-// Amaç: src klasörünü ve içinde "Application" geçen katmanı bulmak.
 public interface IApplicationLayerLocator
 {
     string LocateApplicationLayer();
     string LocateAbstractionLayer();
+    string LocateControllersLayer();
 }
 
 public class ApplicationLayerLocator : IApplicationLayerLocator
@@ -46,5 +46,23 @@ public class ApplicationLayerLocator : IApplicationLayerLocator
             throw new DirectoryNotFoundException("❌ No folder containing 'Abstraction' found inside 'src'.");
 
         return abstractionLayer;
+    }
+
+    public string LocateControllersLayer()
+    {
+        var currentDir = Directory.GetCurrentDirectory();
+        var srcPath = Directory.GetDirectories(currentDir, "src", SearchOption.AllDirectories)
+            .FirstOrDefault();
+
+        if (srcPath == null)
+            throw new DirectoryNotFoundException("❌ 'src' directory not found.");
+
+        var controllersLayer = Directory.GetDirectories(srcPath, "*Controllers*", SearchOption.AllDirectories)
+            .FirstOrDefault();
+
+        if (controllersLayer == null)
+            throw new DirectoryNotFoundException("❌ No folder containing 'Controllers' found inside 'src'.");
+
+        return controllersLayer;
     }
 }

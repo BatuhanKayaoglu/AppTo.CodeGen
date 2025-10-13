@@ -1,8 +1,6 @@
 using System;
 using System.IO;
 
-// Amaç: Dosya sistemi işlemlerini yönetmek (klasör oluşturma, dosya yazma vb.)
-// Amaç: Dosya ve klasör oluşturma işlerini tek sorumlulukla yapmak (SRP).
 namespace AppTo.CodeGen.Services;
 
 public interface IFileSystemService

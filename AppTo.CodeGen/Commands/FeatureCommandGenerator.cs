@@ -32,7 +32,8 @@ namespace AppTo.CodeGen.Commands
         /// </summary>
         /// <param name="featureName">Feature adı, örn: QrSaleTest</param>
         /// <param name="type">command veya query</param>
-        public async Task GenerateAsync(string featureName, string type = "command")
+        /// <param name="endpoint">Endpoint controller adı, örn: Sale</param>
+        public async Task GenerateAsync(string featureName, string type = "command", string endpoint = "")
         {
             if (string.IsNullOrWhiteSpace(featureName))
             {
@@ -101,6 +102,39 @@ namespace AppTo.CodeGen.Commands
             Console.WriteLine($"✅ {featureName}CommandHandler.cs oluşturuldu: {handlerFile}");
             Console.WriteLine($"✅ {featureName}Request.cs oluşturuldu: {requestFile}");
             Console.WriteLine($"✅ {featureName}Response.cs oluşturuldu: {responseFile}");
+
+            // 11️⃣ Endpoint oluştur (eğer endpoint belirtilmişse)
+            if (!string.IsNullOrEmpty(endpoint))
+            {
+                var controllersLayer = _locator.LocateControllersLayer();
+                var controllerFolder = Path.Combine(controllersLayer, endpoint);
+                var controllerFile = Path.Combine(controllerFolder, $"{endpoint}Controller.cs");
+
+                if (File.Exists(controllerFile))
+                {
+                    // Mevcut controller'a endpoint ekle
+                    var controllerNamespace = $"{new DirectoryInfo(controllersLayer).Name}.{endpoint}";
+                    var endpointCode = EndpointGenerator.CreateEndpoint(controllerNamespace, featureName, endpoint, type);
+
+                    // Controller dosyasını oku ve endpoint'i ekle
+                    var existingContent = File.ReadAllText(controllerFile);
+
+                    // Controller'ın son } karakterini bul ve endpoint'i ekle
+                    var lastBraceIndex = existingContent.LastIndexOf("}");
+                    if (lastBraceIndex >= 0)
+                    {
+                        var newContent = existingContent.Substring(0, lastBraceIndex) +
+                                       $"{endpointCode}\n}}";
+                        File.WriteAllText(controllerFile, newContent);
+                    }
+
+                    Console.WriteLine($"✅ Endpoint {featureName} eklendi: {controllerFile}");
+                }
+                else
+                {
+                    Console.WriteLine($"⚠️ Controller bulunamadı: {controllerFile}");
+                }
+            }
 
             await Task.CompletedTask;
         }
