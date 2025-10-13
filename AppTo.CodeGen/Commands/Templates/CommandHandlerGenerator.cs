@@ -22,7 +22,7 @@ public class {featureName}CommandHandler : MetropolCommandHandler<{featureName}C
 {{
     public override async Task<{featureName}Response> Handle({featureName}Command request, CancellationToken cancellationToken)
     {{
-        // TODO: İş mantığını burada uygula...
+        // TODO: Business logic
         return new {featureName}Response();
     }}
 }}

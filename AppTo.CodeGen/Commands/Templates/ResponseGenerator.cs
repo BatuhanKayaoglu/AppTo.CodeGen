@@ -10,7 +10,7 @@ namespace {namespaceName};
 
 public class {featureName}Response
 {{
-    // TODO: Response özelliklerini buraya ekleyin
+
 }}
 ";
     }

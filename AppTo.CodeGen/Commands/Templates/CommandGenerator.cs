@@ -20,7 +20,7 @@ namespace {namespaceName};
 
 public class {featureName}Command : MetropolCommand<{featureName}Response>
 {{
-    // TODO: Command özelliklerini buraya ekleyin
+
 }}
 ";
     }

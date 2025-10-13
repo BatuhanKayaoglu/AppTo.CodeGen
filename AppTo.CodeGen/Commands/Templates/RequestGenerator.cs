@@ -8,7 +8,7 @@ public static class RequestGenerator
 
 public class {featureName}Request
 {{
-    // TODO: Request özelliklerini buraya ekleyin
+
 }}
 ";
     }

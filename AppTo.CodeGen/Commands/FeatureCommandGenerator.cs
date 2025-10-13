@@ -119,13 +119,40 @@ namespace AppTo.CodeGen.Commands
                     // Controller dosyasını oku ve endpoint'i ekle
                     var existingContent = File.ReadAllText(controllerFile);
 
-                    // Controller'ın son } karakterini bul ve endpoint'i ekle
-                    var lastBraceIndex = existingContent.LastIndexOf("}");
-                    if (lastBraceIndex >= 0)
+                    // Namespace ile sarılı mı kontrol et
+                    var hasNamespace = existingContent.Contains("namespace ") &&
+                                     existingContent.IndexOf("namespace ") < existingContent.IndexOf("public class");
+
+                    if (hasNamespace)
                     {
-                        var newContent = existingContent.Substring(0, lastBraceIndex) +
-                                       $"{endpointCode}\n}}";
-                        File.WriteAllText(controllerFile, newContent);
+                        // Namespace ile sarılı: Son iki } karakterinden önce ekle
+                        var lastBraceIndex = existingContent.LastIndexOf("}");
+                        var secondLastBraceIndex = existingContent.LastIndexOf("}", lastBraceIndex - 1);
+
+                        if (secondLastBraceIndex >= 0)
+                        {
+                            var newContent = existingContent.Substring(0, secondLastBraceIndex) +
+                                           $"{endpointCode}\n    }}\n}}";
+                            File.WriteAllText(controllerFile, newContent);
+                        }
+                        else
+                        {
+                            // Fallback: Sadece son } bulunursa
+                            var newContent = existingContent.Substring(0, lastBraceIndex) +
+                                           $"{endpointCode}\n}}";
+                            File.WriteAllText(controllerFile, newContent);
+                        }
+                    }
+                    else
+                    {
+                        // Namespace olmadan: Son } karakterinden önce ekle
+                        var lastBraceIndex = existingContent.LastIndexOf("}");
+                        if (lastBraceIndex >= 0)
+                        {
+                            var newContent = existingContent.Substring(0, lastBraceIndex) +
+                                           $"{endpointCode}\n}}";
+                            File.WriteAllText(controllerFile, newContent);
+                        }
                     }
 
                     Console.WriteLine($"✅ Endpoint {featureName} eklendi: {controllerFile}");
