@@ -11,17 +11,28 @@
 
         <!-- NuGet paket bilgileri -->
         <PackageId>AppTo.CodeGen</PackageId>
-        <Version>1.0.0</Version>
-        <Authors>AppToTech</Authors>
-        <Company>AppToTech</Company>
-        <Description>AppTo feature generator for CQRS-based Clean Architecture projects.</Description>
-        <PackageTags>CQRS;CodeGeneration;CleanArchitecture;AppTo</PackageTags>
+        <Version>1.0.1</Version>
+        <Title>AppTo.CodeGen CLI Tool</Title>
+        <Authors>Batuhan Kayaoğlu</Authors>
+        <Owners>Batuhan Kayaoğlu</Owners>
+        <Company>Batuhan Kayaoğlu</Company>
+        <Description>AppTo.CodeGen is a .NET global tool that helps you generate CQRS command and handler classes following your application structure conventions. It supports automatic folder creation and customizable naming patterns for Command and Query types.</Description>
+        <PackageTags>dotnet tool codegen cqrs command query generator</PackageTags>
+        <PackageProjectUrl>https://github.com/batuhankayaoglu/AppTo.CodeGen</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageType>DotnetTool</PackageType>
+        <Language>en-US</Language>
     </PropertyGroup>
 
     <ItemGroup>
         <!-- Eğer ihtiyaç varsa ek paketler burada eklenebilir -->
         <!-- Örnek: CLI arg parsing veya JSON config -->
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
 </Project>
