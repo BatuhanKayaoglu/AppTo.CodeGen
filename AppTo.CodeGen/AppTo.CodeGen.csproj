@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <!-- Console App olarak çalışacak -->
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+
+        <!-- Dotnet Tool olarak paketlenebilmesi için gerekli -->
+        <PackAsTool>true</PackAsTool> <!-- NuGet paketi CLI tool olarak paketlenir ve global yüklenebilir. -->
+        <ToolCommandName>appTo</ToolCommandName>
+
+        <!-- NuGet paket bilgileri -->
+        <PackageId>AppTo.CodeGen</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>AppToTech</Authors>
+        <Company>AppToTech</Company>
+        <Description>AppTo feature generator for CQRS-based Clean Architecture projects.</Description>
+        <PackageTags>CQRS;CodeGeneration;CleanArchitecture;AppTo</PackageTags>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Eğer ihtiyaç varsa ek paketler burada eklenebilir -->
+        <!-- Örnek: CLI arg parsing veya JSON config -->
+        <PackageReference Include="System.CommandLine" Version="2.0.0-beta4" />
+    </ItemGroup>
+
+</Project>
