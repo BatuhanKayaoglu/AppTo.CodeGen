@@ -19,7 +19,7 @@
     <projectUrl>https://github.com/batuhankayaoglu/AppTo.CodeGen</projectUrl>
 
     <license type="expression">MIT</license>
-
+  
     <tags>dotnet tool codegen cqrs command query generator</tags>
 
     <packageTypes>
@@ -31,9 +31,15 @@
     <dependencies>
       <group targetFramework=".NETCoreApp3.1" />
     </dependencies>
+
+    <icons>
+      <icon src="ApptoCodeGen-64.png" />
+    </icons>
   </metadata>
 
   <files>
     <file src="bin\Release\net9.0\publish\**\*" target="tools\net9.0\any" />
+    <file src="ApptoCodeGen-64.png" target="" />
+    <file src="README.md" target="content" />
   </files>
 </package>
