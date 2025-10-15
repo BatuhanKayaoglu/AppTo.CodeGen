@@ -5,6 +5,7 @@ A powerful .NET global tool for generating CQRS (Command Query Responsibility Se
 ## 🚀 Features
 
 - **Command & Query Generation**: Generate Command, CommandHandler, Query, and QueryHandler classes
+- **Validator Generation**: Automatically create Command and Query validators
 - **Request & Response Models**: Automatically create Request and Response classes
 - **API Endpoints**: Generate REST API endpoints with proper HTTP methods
 - **Smart Project Detection**: Automatically detect project structure and naming
@@ -27,6 +28,9 @@ codegen add feature QrSale --type command --ep Sale
 
 # Generate a query
 codegen add feature GetUser --type query --ep User
+
+# Generate without validator (validator is enabled by default)
+codegen add feature Login --type command --validator:false
 ```
 
 ### Advanced Usage
@@ -48,7 +52,8 @@ Application/
 └── QrSale/
     └── Commands/
         ├── QrSaleCommand.cs
-        └── QrSaleCommandHandler.cs
+        ├── QrSaleCommandHandler.cs
+        └── QrSaleCommandValidator.cs
 
 Abstraction/
 └── QrSale/
@@ -63,14 +68,61 @@ Controllers/
 
 ## 🔧 Command Options
 
-| Option          | Description                     | Example                       |
-| --------------- | ------------------------------- | ----------------------------- |
-| `featureName`   | Name of the feature to generate | `QrSale`                      |
-| `--type`        | Type: `command` or `query`      | `--type command`              |
-| `--ep`          | Endpoint controller name        | `--ep Sale`                   |
-| `--projectName` | Custom project name (optional)  | `--projectName Metropol.LUKE` |
+| Option          | Description                          | Example                                                      |
+| --------------- | ------------------------------------ | ------------------------------------------------------------ |
+| `featureName`   | Name of the feature to generate      | `QrSale`                                                     |
+| `--type`        | Type: `command` or `query`           | `--type command`                                             |
+| `--ep`          | Endpoint controller name             | `--ep Sale`                                                  |
+| `--projectName` | Custom project name (optional)       | `--projectName Metropol.LUKE`                                |
+| `--prop-req`    | Request özellikleri                  | `--prop-req "Name:string,Email:string,Age:int,OrderId:int"`  |
+| `--prop-resp`   | Response özellikleri                 | `--prop-resp "Name:string,Email:string,Age:int,OrderId:int"` |
+| `--validator`   | Validator oluştur (varsayılan: true) | `--validator:false`                                          |
+
+## 📝 Properties Examples
+
+```bash
+# Sadece Request properties
+codegen add feature UserRegistration --type command --prop-req "Name:string,Email:string,Age:int,OrderId:int"
+
+# Sadece Response properties
+codegen add feature GetUser --type query --prop-resp "Name:string,Email:string,Age:int,OrderId:int"
+
+# Hem Request hem Response properties
+codegen add feature CreateProduct --type command --prop-req "Name:string,Price:decimal" --prop-resp "Id:int,Name:string,Price:decimal,CreatedDate:DateTime"
+
+# Hiçbir property belirtmezseniz (boş sınıflar)
+codegen add feature SimpleCommand --type command
+```
 
 ## 📝 Generated Code Examples
+
+### Request Class
+
+```csharp
+namespace MyProject.Abstraction.UserRegistration.Request;
+
+public class UserRegistrationRequest
+{
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public int Age { get; set; }
+    public int OrderId { get; set; }
+}
+```
+
+### Response Class
+
+```csharp
+namespace MyProject.Abstraction.UserRegistration.Response;
+
+public class UserRegistrationResponse
+{
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public int Age { get; set; }
+    public int OrderId { get; set; }
+}
+```
 
 ### Command Class
 
@@ -100,6 +152,22 @@ public class QrSaleCommandHandler : MetropolCommandHandler<QrSaleCommand, QrSale
     {
         // TODO: İş mantığını burada uygula...
         return new QrSaleResponse();
+    }
+}
+```
+
+### Command Validator
+
+```csharp
+using MyProject.Infrastructure.Validation;
+
+namespace MyProject.Application.QrSale.Commands;
+
+public class QrSaleCommandValidator : MetropolValidator<QrSaleCommand>
+{
+    public QrSaleCommandValidator()
+    {
+
     }
 }
 ```

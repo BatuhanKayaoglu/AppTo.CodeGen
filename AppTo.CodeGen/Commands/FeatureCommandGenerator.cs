@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace AppTo.CodeGen.Commands
         /// <param name="featureName">Feature adı, örn: QrSaleTest</param>
         /// <param name="type">command veya query</param>
         /// <param name="endpoint">Endpoint controller adı, örn: Sale</param>
-        public async Task GenerateAsync(string featureName, FeatureType type = FeatureType.Command, string endpoint = "", string projectName = null)
+        public async Task GenerateAsync(string featureName, FeatureType type = FeatureType.Command, string endpoint = "", string projectName = null, string propReq = null, string propResp = null, bool generateValidator = true)
         {
             if (string.IsNullOrWhiteSpace(featureName))
             {
@@ -71,6 +72,7 @@ namespace AppTo.CodeGen.Commands
             // 7️⃣ Dosya yolları
             var commandFile = Path.Combine(appTypeFolder, type == FeatureType.Command ? $"{featureName}Command.cs" : $"{featureName}Query.cs");
             var handlerFile = Path.Combine(appTypeFolder, type == FeatureType.Command ? $"{featureName}CommandHandler.cs" : $"{featureName}QueryHandler.cs");
+            var validatorFile = Path.Combine(appTypeFolder, type == FeatureType.Command ? $"{featureName}CommandValidator.cs" : $"{featureName}QueryValidator.cs");
             var requestFile = Path.Combine(requestFolder, $"{featureName}Request.cs");
             var responseFile = Path.Combine(responseFolder, $"{featureName}Response.cs");
 
@@ -82,23 +84,39 @@ namespace AppTo.CodeGen.Commands
             var responseNamespaceName = $"{absProjectName}.{featureName}.Response";
 
             // 9️⃣ Kodları oluştur
-            string commandCode, handlerCode;
+            string commandCode, handlerCode, validatorCode = null;
             if (type == FeatureType.Command)
             {
                 commandCode = Commands.Templates.CommandGenerator.CreateCommand(appNamespaceName, featureName, type.ToString().ToLower(), projectName);
                 handlerCode = Commands.Templates.CommandHandlerGenerator.CreateCommandHandler(appNamespaceName, featureName, type.ToString().ToLower(), projectName);
+                if (generateValidator)
+                {
+                    validatorCode = Commands.Templates.CommandValidatorGenerator.CreateCommandValidator(appNamespaceName, featureName, type.ToString().ToLower(), projectName);
+                }
             }
             else
             {
                 commandCode = Commands.Templates.QueryGenerator.CreateQuery(appNamespaceName, featureName, type.ToString().ToLower(), projectName);
                 handlerCode = Commands.Templates.QueryHandlerGenerator.CreateQueryHandler(appNamespaceName, featureName, type.ToString().ToLower(), projectName);
+                if (generateValidator)
+                {
+                    validatorCode = Commands.Templates.QueryValidatorGenerator.CreateQueryValidator(appNamespaceName, featureName, type.ToString().ToLower(), projectName);
+                }
             }
-            var requestCode = RequestGenerator.CreateRequest(requestNamespaceName, featureName);
-            var responseCode = ResponseGenerator.CreateResponse(responseNamespaceName, featureName);
+            // Properties parsing
+            var requestProperties = ParseRequestProperties(propReq);
+            var responseProperties = ParseResponseProperties(propResp);
+
+            var requestCode = RequestGenerator.CreateRequest(requestNamespaceName, featureName, requestProperties);
+            var responseCode = ResponseGenerator.CreateResponse(responseNamespaceName, featureName, responseProperties);
 
             // 🔟 Dosyaları yaz
             _fileSystem.WriteFile(commandFile, commandCode);
             _fileSystem.WriteFile(handlerFile, handlerCode);
+            if (generateValidator && !string.IsNullOrEmpty(validatorCode))
+            {
+                _fileSystem.WriteFile(validatorFile, validatorCode);
+            }
             _fileSystem.WriteFile(requestFile, requestCode);
             _fileSystem.WriteFile(responseFile, responseCode);
 
@@ -107,6 +125,11 @@ namespace AppTo.CodeGen.Commands
 
             Console.WriteLine($"✅ {featureName}{commandType}.cs oluşturuldu: {commandFile}");
             Console.WriteLine($"✅ {featureName}{handlerType}.cs oluşturuldu: {handlerFile}");
+            if (generateValidator)
+            {
+                var validatorType = type == FeatureType.Command ? "CommandValidator" : "QueryValidator";
+                Console.WriteLine($"✅ {featureName}{validatorType}.cs oluşturuldu: {validatorFile}");
+            }
             Console.WriteLine($"✅ {featureName}Request.cs oluşturuldu: {requestFile}");
             Console.WriteLine($"✅ {featureName}Response.cs oluşturuldu: {responseFile}");
 
@@ -171,6 +194,56 @@ namespace AppTo.CodeGen.Commands
             }
 
             await Task.CompletedTask;
+        }
+
+        private List<RequestProperty> ParseRequestProperties(string properties)
+        {
+            if (string.IsNullOrEmpty(properties))
+                return null;
+
+            var requestProperties = new List<RequestProperty>();
+            var propertyStrings = properties.Split(',');
+
+            foreach (var propStr in propertyStrings)
+            {
+                var parts = propStr.Trim().Split(':');
+                if (parts.Length < 2) continue;
+
+                var property = new RequestProperty
+                {
+                    Name = parts[0].Trim(),
+                    Type = parts[1].Trim()
+                };
+
+                requestProperties.Add(property);
+            }
+
+            return requestProperties;
+        }
+
+        private List<ResponseProperty> ParseResponseProperties(string properties)
+        {
+            if (string.IsNullOrEmpty(properties))
+                return null;
+
+            var responseProperties = new List<ResponseProperty>();
+            var propertyStrings = properties.Split(',');
+
+            foreach (var propStr in propertyStrings)
+            {
+                var parts = propStr.Trim().Split(':');
+                if (parts.Length < 2) continue;
+
+                var property = new ResponseProperty
+                {
+                    Name = parts[0].Trim(),
+                    Type = parts[1].Trim()
+                };
+
+                responseProperties.Add(property);
+            }
+
+            return responseProperties;
         }
     }
 }
