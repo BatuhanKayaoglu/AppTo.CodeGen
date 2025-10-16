@@ -85,9 +85,9 @@ Controllers/
 | `--type`        | Type: `command` or `query`           | `--type command`                                             |
 | `--ep`          | Endpoint controller name             | `--ep Sale`                                                  |
 | `--projectName` | Custom project name (optional)       | `--projectName Metropol.LUKE`                                |
-| `--prop-req`    | Request özellikleri                  | `--prop-req "Name:string,Email:string,Age:int,OrderId:int"`  |
-| `--prop-resp`   | Response özellikleri                 | `--prop-resp "Name:string,Email:string,Age:int,OrderId:int"` |
-| `--validator`   | Validator oluştur (varsayılan: true) | `--validator:false`                                          |
+| `--prop-req`    | Request property                  | `--prop-req "Name:string,Email:string,Age:int,OrderId:int"`  |
+| `--prop-resp`   | Response property                 | `--prop-resp "Name:string,Email:string,Age:int,OrderId:int"` |
+| `--validator`   | Validator create (varsayılan: true) | `--validator:false`                                          |
 
 ## 📝 Properties Examples
 
