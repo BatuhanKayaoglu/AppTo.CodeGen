@@ -11,6 +11,17 @@ A powerful .NET global tool for generating CQRS (Command Query Responsibility Se
 - **Smart Project Detection**: Automatically detect project structure and naming
 - **Flexible Configuration**: Support for custom project names and endpoint controllers
 - **Clean Architecture**: Follows Clean Architecture folder structure conventions
+- **Modern Architecture**: Built with Clean Architecture, Dependency Injection, and SOLID principles
+
+## 🏗️ Architecture
+
+This tool is built using modern software architecture principles:
+
+- **Clean Architecture**: Separation of concerns with Core, Application, Infrastructure, and Presentation layers
+- **Dependency Injection**: Built-in DI container for better testability and maintainability
+- **SOLID Principles**: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion
+- **CQRS Pattern**: Command Query Responsibility Segregation for better separation of concerns
+- **Template Engine**: Pluggable template system for code generation
 
 ## 📦 Installation
 
@@ -213,6 +224,18 @@ The tool automatically detects your project name using this priority:
 - **Clean Architecture**: Application, Abstraction, and Controllers layers
 - **REST API**: HTTP POST for commands, HTTP GET for queries
 - **MediatR Integration**: Compatible with MediatR pattern
+
+## 🧪 Testing
+
+The project includes comprehensive unit tests:
+
+```bash
+# Run tests
+dotnet test
+
+# Run tests with coverage
+dotnet test --collect:"XPlat Code Coverage"
+```
 
 ## 🛠️ Requirements
 
