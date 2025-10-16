@@ -145,7 +145,7 @@ namespace MyProject.Application.QrSale.Commands;
 
 public class QrSaleCommand : MetropolCommand<QrSaleResponse>
 {
-    // TODO: Command özelliklerini buraya ekleyin
+    // TODO: Add Business Logic here.
 }
 ```
 
@@ -161,7 +161,7 @@ public class QrSaleCommandHandler : MetropolCommandHandler<QrSaleCommand, QrSale
 {
     public override async Task<QrSaleResponse?> Handle(QrSaleCommand request, CancellationToken cancellationToken)
     {
-        // TODO: İş mantığını burada uygula...
+        // TODO: Add Business Logic here.
         return new QrSaleResponse();
     }
 }
@@ -218,43 +218,10 @@ The tool automatically detects your project name using this priority:
 1. **src/ folder**: Uses the first directory name in the `src/` folder
 2. **Manual override**: Use `--projectName` parameter to specify custom name
 
-## 🎨 Supported Patterns
-
-- **CQRS Pattern**: Commands and Queries with separate handlers
-- **Clean Architecture**: Application, Abstraction, and Controllers layers
-- **REST API**: HTTP POST for commands, HTTP GET for queries
-- **MediatR Integration**: Compatible with MediatR pattern
-
-## 🧪 Testing
-
-The project includes comprehensive unit tests:
-
-```bash
-# Run tests
-dotnet test
-
-# Run tests with coverage
-dotnet test --collect:"XPlat Code Coverage"
-```
-
 ## 🛠️ Requirements
 
 - .NET 9.0 or later
 - Clean Architecture project structure
 - CQRS pattern implementation
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📞 Support
-
-If you have any questions or need help, please open an issue on GitHub.
-
----
 
 **Made with ❤️ by Batuhan Kayaoğlu**
